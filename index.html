@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="AuraFocus — Deep work, redefined. A premium Pomodoro productivity suite." />
+  <title>AuraFocus — Deep Work, Redefined.</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- =============================================
+       LOGIN GATE
+       First-time visitors see this overlay.
+       Dismissed after name is entered and saved.
+       ============================================= -->
+  <div class="login-overlay" id="login-overlay" role="dialog" aria-modal="true" aria-labelledby="login-title">
+    <div class="login-card">
+      <div class="login-logo">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <circle cx="12" cy="12" r="10.5" stroke="currentColor" stroke-width="1.3"/>
+          <circle cx="12" cy="12" r="4.2" fill="currentColor"/>
+        </svg>
+        <span>AuraFocus</span>
+      </div>
+      <h1 class="login-title" id="login-title">Welcome.</h1>
+      <p class="login-sub">Enter your name to begin your focus session.</p>
+      <div class="login-form">
+        <input
+          class="login-input"
+          type="text"
+          id="login-name-input"
+          placeholder="Your name"
+          maxlength="32"
+          autocomplete="given-name"
+          autofocus
+        />
+        <button class="btn-primary" id="login-submit" onclick="submitLogin()">
+          Enter AuraFocus
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+            <path d="M3 7h8M8 4l3 3-3 3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =============================================
+       Hidden until login. Contains all views.
+       ============================================= -->
+  <div class="app-shell hidden" id="app-shell">
+
+    <!-- FIXED HEADER -->
+    <header class="site-header" id="site-header">
+      <div class="header-inner">
+
+        <!-- Logo -->
+        <button class="logo" onclick="handleViewSwitch('home')" aria-label="Go to home">
+          <svg class="logo-mark" width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
+            <circle cx="9" cy="9" r="7.5" stroke="currentColor" stroke-width="1.2"/>
+            <circle cx="9" cy="9" r="3" fill="currentColor"/>
+          </svg>
+          <span class="logo-text">AuraFocus</span>
+        </button>
+
+        <!-- Navigation -->
+        <nav class="header-nav" role="navigation" aria-label="Main navigation">
+          <button class="nav-btn active" data-view="home" onclick="handleViewSwitch('home')">Home</button>
+          <button class="nav-btn" data-view="pomodoro" onclick="handleViewSwitch('pomodoro')">Focus</button>
+          <button class="nav-btn" data-view="analytics" onclick="handleViewSwitch('analytics')">Analytics</button>
+        </nav>
+
+        <!-- Right: byline + user pill -->
+        <div class="header-right">
+          <span class="byline">Design by Ayoub El Achab</span>
+          <button class="user-pill" id="header-user-pill" onclick="handleViewSwitch('analytics')" aria-label="View your profile">
+            <div class="user-pill-avatar" id="header-avatar">A</div>
+            <span id="header-username">User</span>
+          </button>
+        </div>
+
+        <!-- Mobile menu toggle -->
+        <button class="mobile-menu-btn" id="mobile-menu-btn" onclick="toggleMobileMenu()" aria-label="Toggle menu">
+          <span></span><span></span><span></span>
+        </button>
+
+      </div>
+    </header>
+
+    <!-- ============================================
+         VIEW: HOME
+         ============================================ -->
+    <main class="view active" id="view-home">
+
+      <section class="hero">
+        <div class="hero-eyebrow">
+          <span class="eyebrow-dot" aria-hidden="true"></span>
+          <span>Productivity Suite — 2025</span>
+        </div>
+        <h1 class="hero-title">Deep work,<br/><em>redefined.</em></h1>
+        <p class="hero-subtitle">
+          Master your focus with AuraFocus — the minimal<br class="br-desktop"/>
+          productivity suite built for serious, sustained work.
+        </p>
+        <div class="hero-cta">
+          <button class="btn-primary" onclick="handleViewSwitch('pomodoro')">
+            Launch Pomodoro
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+              <path d="M3 7h8M8 4l3 3-3 3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <button class="btn-secondary" onclick="handleViewSwitch('analytics')">
+            View Analytics
+          </button>
+        </div>
+
+        <!-- Live mini stats -->
+        <div class="hero-stats">
+          <div class="hero-stat">
+            <span class="hero-stat-val mono" id="hs-sessions">—</span>
+            <span class="hero-stat-label">sessions this week</span>
+          </div>
+          <div class="hero-stat-sep" aria-hidden="true"></div>
+          <div class="hero-stat">
+            <span class="hero-stat-val mono" id="hs-hours">—</span>
+            <span class="hero-stat-label">focus hours</span>
+          </div>
+          <div class="hero-stat-sep" aria-hidden="true"></div>
+          <div class="hero-stat">
+            <span class="hero-stat-val mono" id="hs-streak">—</span>
+            <span class="hero-stat-label">day streak</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- 3-column feature grid -->
+      <section class="feature-grid" aria-label="Features">
+        <article class="feature-card">
+          <div class="feature-icon" aria-hidden="true">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+              <circle cx="9" cy="9" r="7.5" stroke="currentColor" stroke-width="1.2"/>
+              <path d="M9 5.5V9l2.5 2.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <h3 class="feature-title">Smart Timer</h3>
+          <p class="feature-desc">SVG ring with instant presets — 25, 50, 60 min or custom. No settings required.</p>
+        </article>
+        <article class="feature-card">
+          <div class="feature-icon" aria-hidden="true">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+              <path d="M3 13V7l5-3.5 5 3.5v6" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/>
+              <path d="M7 18v-4h4v4" stroke="currentColor" stroke-width="1.2"/>
+              <path d="M1 13h16" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <h3 class="feature-title">Ambient Sound</h3>
+          <p class="feature-desc">Rain, Deep Focus, Lo-Fi — real audio with volume fade. Designed for flow state.</p>
+        </article>
+        <article class="feature-card">
+          <div class="feature-icon" aria-hidden="true">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+              <rect x="2" y="11" width="3" height="6" rx="1" fill="currentColor" opacity=".35"/>
+              <rect x="7.5" y="7" width="3" height="10" rx="1" fill="currentColor" opacity=".65"/>
+              <rect x="13" y="3" width="3" height="14" rx="1" fill="currentColor"/>
+            </svg>
+          </div>
+          <h3 class="feature-title">Weekly Analytics</h3>
+          <p class="feature-desc">Auto-reset every Monday. Track focus hours, sessions, streaks. Zero friction.</p>
+        </article>
+      </section>
+
+    </main>
+
+    <!-- ============================================
+         VIEW: POMODORO
+         ============================================ -->
+    <div class="view" id="view-pomodoro">
+      <div class="pomodoro-layout">
+
+        <!-- LEFT: Timer -->
+        <section class="timer-panel">
+
+          <!-- Mode tabs -->
+          <div class="mode-tabs" role="tablist" aria-label="Timer mode">
+            <button class="mode-tab active" role="tab" aria-selected="true" data-mode="work"
+              onclick="setMode('work', this)">Work</button>
+            <button class="mode-tab" role="tab" aria-selected="false" data-mode="short"
+              onclick="setMode('short', this)">Short Break</button>
+            <button class="mode-tab" role="tab" aria-selected="false" data-mode="long"
+              onclick="setMode('long', this)">Long Break</button>
+          </div>
+
+          <!-- SVG Ring -->
+          <div class="timer-ring-wrap" id="timer-ring-wrap">
+            <svg class="timer-svg" viewBox="0 0 240 240" aria-hidden="true">
+              <circle class="ring-track" cx="120" cy="120" r="106"/>
+              <circle class="ring-progress" id="ring-progress" cx="120" cy="120" r="106"/>
+            </svg>
+            <div class="timer-face">
+              <div class="timer-display" id="timer-display" aria-live="polite" aria-atomic="true">25:00</div>
+              <div class="timer-mode-label" id="timer-mode-label">Focus</div>
+            </div>
+          </div>
+
+          <!-- Quick time picker (no settings required) -->
+          <div class="quick-times" role="group" aria-label="Quick time selection">
+            <button class="qt-btn active" data-min="25" onclick="setQuickTime(25, this)">25</button>
+            <button class="qt-btn" data-min="50" onclick="setQuickTime(50, this)">50</button>
+            <button class="qt-btn" data-min="60" onclick="setQuickTime(60, this)">60</button>
+            <div class="qt-custom">
+              <input
+                class="qt-input"
+                type="number"
+                id="custom-min-input"
+                placeholder="—"
+                min="1"
+                max="120"
+                aria-label="Custom minutes"
+                oninput="setCustomTime(this.value)"
+              />
+              <span class="qt-unit">min</span>
+            </div>
+          </div>
+
+          <!-- Timer controls -->
+          <div class="timer-controls">
+            <button class="ctrl-btn ctrl-secondary" onclick="resetTimer()" aria-label="Reset">
+              <svg width="15" height="15" viewBox="0 0 15 15" fill="none" aria-hidden="true">
+                <path d="M2.5 7.5a5 5 0 1 0 1-3.2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+                <path d="M3.5 4V7.5H7" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <button class="ctrl-btn ctrl-primary" id="play-btn" onclick="toggleTimer()" aria-label="Start">
+              <svg class="icon-play" width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                <path d="M6 4l10 6-10 6V4z" fill="currentColor"/>
+              </svg>
+              <svg class="icon-pause" width="20" height="20" viewBox="0 0 20 20" fill="none" style="display:none" aria-hidden="true">
+                <rect x="5" y="4" width="3.5" height="12" rx="1" fill="currentColor"/>
+                <rect x="11.5" y="4" width="3.5" height="12" rx="1" fill="currentColor"/>
+              </svg>
+            </button>
+            <button class="ctrl-btn ctrl-secondary" onclick="skipSession()" aria-label="Skip">
+              <svg width="15" height="15" viewBox="0 0 15 15" fill="none" aria-hidden="true">
+                <path d="M3 12V3l7 4.5L3 12z" fill="currentColor"/>
+                <rect x="11.5" y="3" width="1.5" height="9" rx=".75" fill="currentColor"/>
+              </svg>
+            </button>
+          </div>
+
+          <!-- Session dots -->
+          <div class="session-row" aria-label="Session progress">
+            <div class="session-dots" id="session-dots"></div>
+            <span class="session-label" id="session-label">Session 1 of 4</span>
+          </div>
+
+        </section>
+
+        <!-- RIGHT: Controls -->
+        <aside class="side-panel">
+
+          <!-- Sound card -->
+          <div class="panel-card">
+            <div class="panel-card-header">
+              <h2 class="panel-card-title">Soundscape</h2>
+              <button class="icon-btn" id="sound-toggle-btn" onclick="toggleMasterSound()" aria-label="Toggle sound">
+                <svg class="icon-vol-on" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                  <path d="M2 6v4h3l4 3V3L5 6H2z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/>
+                  <path d="M11.5 5a3.5 3.5 0 0 1 0 6" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+                </svg>
+                <svg class="icon-vol-off" width="16" height="16" viewBox="0 0 16 16" fill="none" style="display:none">
+                  <path d="M2 6v4h3l4 3V3L5 6H2z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/>
+                  <path d="M12 5.5l-3 3m0-3l3 3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+                </svg>
+              </button>
+            </div>
+
+            <div class="sound-list" role="group" aria-label="Sound selection">
+              <button class="sound-row active" data-sound="rain" onclick="selectSound('rain', this)">
+                <div class="sound-row-left">
+                  <span class="sound-indicator" aria-hidden="true"></span>
+                  <span class="sound-name">Rain</span>
+                </div>
+                <span class="sound-tag">Ambient</span>
+              </button>
+              <button class="sound-row" data-sound="focus" onclick="selectSound('focus', this)">
+                <div class="sound-row-left">
+                  <span class="sound-indicator" aria-hidden="true"></span>
+                  <span class="sound-name">Deep Focus</span>
+                </div>
+                <span class="sound-tag">Binaural</span>
+              </button>
+              <button class="sound-row" data-sound="lofi" onclick="selectSound('lofi', this)">
+                <div class="sound-row-left">
+                  <span class="sound-indicator" aria-hidden="true"></span>
+                  <span class="sound-name">Lo-Fi</span>
+                </div>
+                <span class="sound-tag">Music</span>
+              </button>
+            </div>
+
+            <div class="volume-row">
+              <svg width="13" height="13" viewBox="0 0 13 13" fill="none" aria-hidden="true">
+                <path d="M1.5 5v3H4l3.5 2.5V2.5L4 5H1.5z" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"/>
+              </svg>
+              <input
+                class="volume-slider"
+                type="range"
+                id="volume-slider"
+                min="0"
+                max="100"
+                value="60"
+                aria-label="Volume"
+                oninput="setVolume(this.value)"
+              />
+              <span class="volume-display" id="volume-display">60</span>
+            </div>
+          </div>
+
+          <!-- Today card -->
+          <div class="panel-card">
+            <div class="panel-card-header">
+              <h2 class="panel-card-title">Today</h2>
+            </div>
+            <dl class="info-list">
+              <div class="info-item">
+                <dt class="info-label">Sessions</dt>
+                <dd class="info-val mono" id="today-sessions">0</dd>
+              </div>
+              <div class="info-item">
+                <dt class="info-label">Focus time</dt>
+                <dd class="info-val mono" id="today-time">0m</dd>
+              </div>
+              <div class="info-item">
+                <dt class="info-label">Current mode</dt>
+                <dd class="info-val" id="today-mode-val">Work</dd>
+              </div>
+            </dl>
+          </div>
+
+          <!-- Keyboard shortcuts -->
+          <div class="panel-card hints-card">
+            <div class="hint-item"><kbd>Space</kbd><span>Play / Pause</span></div>
+            <div class="hint-item"><kbd>R</kbd><span>Reset</span></div>
+            <div class="hint-item"><kbd>S</kbd><span>Skip</span></div>
+          </div>
+
+        </aside>
+      </div>
+    </div>
+
+    <!-- ============================================
+         VIEW: ANALYTICS
+         ============================================ -->
+    <div class="view" id="view-analytics">
+      <div class="analytics-layout">
+
+        <!-- Profile row -->
+        <div class="profile-row">
+          <div class="profile-avatar" id="profile-avatar">A</div>
+          <div class="profile-info">
+            <div class="profile-name" id="profile-name">User</div>
+            <div class="profile-since" id="profile-since">Member since today</div>
+          </div>
+          <div class="profile-sessions-badge" id="profile-badge">
+            <span id="profile-badge-text">0 sessions</span>
+          </div>
+        </div>
+
+        <!-- 4-column stat grid -->
+        <div class="an-stats-grid">
+          <div class="an-stat">
+            <div class="an-stat-val mono" id="an-hours">0h 0m</div>
+            <div class="an-stat-label">Focus this week</div>
+          </div>
+          <div class="an-stat">
+            <div class="an-stat-val mono" id="an-sessions">0</div>
+            <div class="an-stat-label">Sessions</div>
+          </div>
+          <div class="an-stat">
+            <div class="an-stat-val mono" id="an-streak">0</div>
+            <div class="an-stat-label">Day streak</div>
+          </div>
+          <div class="an-stat">
+            <div class="an-stat-val mono" id="an-avg">0m</div>
+            <div class="an-stat-label">Avg session</div>
+          </div>
+        </div>
+
+        <!-- Weekly bar chart (CSS only bars) -->
+        <div class="chart-card">
+          <div class="chart-header">
+            <h2 class="chart-title">Weekly Focus</h2>
+            <span class="chart-note" id="chart-reset-note">Resets every Monday</span>
+          </div>
+          <div class="week-chart" aria-label="Weekly focus chart">
+            <div class="week-bars" id="week-bars"></div>
+            <div class="week-labels" id="week-labels"></div>
+          </div>
+        </div>
+
+        <!-- Progress bars -->
+        <div class="progress-cards">
+          <div class="prog-card">
+            <div class="prog-card-top">
+              <span class="prog-card-title">Daily Goal</span>
+              <span class="prog-card-val" id="pg-daily-val">0 / 4 sessions</span>
+            </div>
+            <div class="prog-track"><div class="prog-fill" id="pg-daily-bar" style="width:0%"></div></div>
+          </div>
+          <div class="prog-card">
+            <div class="prog-card-top">
+              <span class="prog-card-title">Weekly Target</span>
+              <span class="prog-card-val" id="pg-weekly-val">0 / 20 sessions</span>
+            </div>
+            <div class="prog-track"><div class="prog-fill fill-2" id="pg-weekly-bar" style="width:0%"></div></div>
+          </div>
+          <div class="prog-card">
+            <div class="prog-card-top">
+              <span class="prog-card-title">Hours Goal</span>
+              <span class="prog-card-val" id="pg-hours-val">0 / 10 hours</span>
+            </div>
+            <div class="prog-track"><div class="prog-fill fill-3" id="pg-hours-bar" style="width:0%"></div></div>
+          </div>
+        </div>
+
+        <div class="an-footer-row">
+          <button class="btn-ghost" onclick="confirmResetStats()">Reset weekly stats</button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Site footer -->
+    <footer class="site-footer">
+      <span>AuraFocus © 2025</span>
+      <span>Design by Ayoub El Achab</span>
+    </footer>
+
+  </div><!-- /app-shell -->
+
+  <!-- Audio elements — sources injected via Web Audio API in app.js -->
+  <audio id="audio-rain" loop preload="none"></audio>
+  <audio id="audio-focus" loop preload="none"></audio>
+  <audio id="audio-lofi" loop preload="none"></audio>
+
+  <script src="apps.js"></script>
+</body>
+</html>

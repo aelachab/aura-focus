@@ -1,4 +1,4 @@
-# 🚀 AuraFocus — Futuristic Pomodoro SaaS
+# 🚀 AuraFocus — Futuristic Pomodoro
 
 <p align="center">
   <b>Focus like never before.</b><br>
